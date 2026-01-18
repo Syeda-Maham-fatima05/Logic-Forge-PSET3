@@ -1,37 +1,47 @@
-def temp_next(array,temp,next):
-    threshold=array[1]
-    target=temp[next]
-    for i in range(next+1,len(temp)):
-        if temp[i]>=target+threshold:
-            return i
-        elif temp[i]<=target-threshold:
-            return i
-
-def temp_count(array,temp,L,R):
-    count=0
-    K=array[1]
-    for i in range(L,R+1):
-        current=temp[i]
-        found=False
-        for j in range(i+1,len(temp)):
-            if temp[j]>=current+K or temp[j]<=current-K:
-                found=True
-                break
-        if found:
-            count+=1
-    return count
-
-array=list(map(int,input().split()))
-temp=list(map(int,input().split()))
-for i in range(array[2]):
-    query=input().split()
-    if query[0]=="NEXT":
-        x=int(query[1])
-        print(temp_next(array,temp,x))
-    elif query[0]=="COUNT":
-        y=int(query[1])
-        z=int(query[2])
-        print(temp_count(array,temp,y,z))
+def smart_city_alerts(N,K,temps,queries):
+    next_hot=[0]*N
+    stack=[]
+    for i in range(N-1,-1,-1):
+        while stack and temps[stack[-1]]<temps[i]+K:
+            stack.pop()
+        next_hot[i]=stack[-1]+1 if stack else 0
+        stack.append(i)
+    next_cold=[0]*N
+    stack=[]
+    for i in range(N-1,-1,-1):
+        while stack and temps[stack[-1]]>temps[i]-K:
+            stack.pop()
+        next_cold[i]=stack[-1]+1 if stack else 0
+        stack.append(i)
+    alert=[0]*N
+    for i in range(N):
+        if next_hot[i] and next_cold[i]:
+            alert[i]=min(next_hot[i]-1,next_cold[i]-1)
+        elif next_hot[i]:
+            alert[i]=next_hot[i]-1
+        elif next_cold[i]:
+            alert[i]=next_cold[i]-1
+    pref=[0]*N
+    pref[0]=1 if alert[0]!=0 else 0
+    for i in range(1, N):
+        pref[i]=pref[i-1]+(1 if alert[i]!=0 else 0)
+    results=[]
+    for q in queries:
+        parts=q.split()
+        if parts[0]=="NEXT":
+            x=int(parts[1])
+            results.append(str(alert[x]) if alert[x]!=0 else "No Alert")
+        elif parts[0]=="COUNT":
+            L, R=int(parts[1]),int(parts[2])
+            count=pref[R]-(pref[L-1] if L> 0 else 0)
+            results.append(str(count))
+    return results
+N,K,Q=8,3,2
+temps=[73,74,75,71,69,72,76,73]
+queries=["NEXT 3","COUNT 0 7"]
+output=smart_city_alerts(N,K,temps,queries)
+for line in output:
+    print(line)
 
 
 

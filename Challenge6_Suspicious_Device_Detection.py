@@ -1,24 +1,16 @@
 def detection(array):
-    size=len(array)
-    max_frq=size/2
-    freq={}
-    for x in array:
-        if x in freq:
-            freq[x]+=1
-        else:
-            freq[x]=1
-    max_value=max(freq.values())
-    max_key=max(freq,key=freq.get)
-    if max_value==max_frq:
-        return max_key
-
+    for i in range(len(array)-1):
+        if array[i]==array[i+1]:
+            return array[i]
+    return array[0]
+# array=list(map(int, input("Enter the identifiers: ").split()))
+# print("Repeated Identifier:",detection(array))
 size=6
 array1=[2,1,2,5,3,2]
 print("Size:",size)
 print("Array:",array1)
-print("Identifier",detection(array1))
+print("Repeated Identifier",detection(array1))
 print()
 array2=[2,1,2,5,3,2]
 print("Array:",array2)
 print("Repeated Identifier",detection(array2))
-

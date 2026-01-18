@@ -1,53 +1,57 @@
-def count_boats(w, p, lim):
-    n=len(w)
-    used=[0] * n
+def count_boats(w,p,lim):
+    arr=[]
+    for i in range(len(w)):
+        arr.append([w[i],p[i]])
+    arr.sort()
+    i=0
+    j=len(arr)-1
     boat=0
-    for i in range(n):
-        if used[i]==1:
-            continue
-        used[i]=1
-        paired=0
-        for j in range(i+1,n):
-            if used[j]==0:
-                if w[i]+w[j]<=lim and not (p[i]==1 and p[j]==1):
-                    used[j]=1
-                    paired=1
-                    break
+    while i<=j:
+        if i<j:
+            if arr[i][0]+arr[j][0]<=lim and not (arr[i][1]==1 and arr[j][1]==1):
+                i+=1
+                j-=1
+            else:
+                j-=1
+        else:
+            j-=1
         boat+=1
     return boat
 def left_people(w,p,lim,B):
-    n=len(w)
-    used=[0] * n
+    arr=[]
+    for i in range(len(w)):
+        arr.append([w[i],p[i]])
+    arr.sort()
+    n=len(arr)
+    used=[0]*n
     boat=0
+    taken=0
     for i in range(n):
         if boat==B:
             break
         if used[i]==1:
             continue
-        used[i]=1
-        paired=0
         for j in range(i+1,n):
             if used[j]==0:
-                if w[i]+w[j]<=lim and not (p[i]==1 and p[j]==1):
+                if arr[i][0]+arr[j][0]<=lim and not (arr[i][1]==1 and arr[j][1]==1):
                     used[j]=1
-                    paired=1
+                    taken+=2
                     break
+        else:
+            taken+=1
+        used[i]=1
         boat+=1
-    left=0
-    for x in used:
-        if x==0:
-            left+=1
-    return left
+    return len(w)-taken
 
 
-n, q, limit=map(int, input().split())
+n,q,limit=map(int, input().split())
 weight=list(map(int, input().split()))
 priority=list(map(int, input().split()))
-min_boat=count_boats(weight, priority, limit)
+min_boat = count_boats(weight, priority, limit)
 print("Minimum boats =",min_boat)
 for _ in range(q):
     query=input().split()
-    if query[0] == "CANPAIR":
+    if query[0]=="CANPAIR":
         x=int(query[1])
         y=int(query[2])
         if weight[x]+weight[y]<=limit and not (priority[x]==1 and priority[y]==1):
